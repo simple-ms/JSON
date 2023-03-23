@@ -1,0 +1,44 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+group 'ms.simple.projects'
+version "${project.property('SIMPLE_JSON_VERSION')}"
+
+version
+
+ext {
+    jacksonVersion = "2.14.2"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "com.fasterxml.jackson.core:jackson-core:2.14.2"
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
+}
+
+
+publishing {
+    publications {
+        myLibrary(MavenPublication) {
+            artifact jar
+        }
+    }
+
+    repositories {
+        maven {
+            if (project.hasProperty('NEXUS_USERNAME') && project.hasProperty('NEXUS_PASSWORD')) {
+                println(project.property('NEXUS_URL'))
+                credentials {
+                    username project.property('NEXUS_USERNAME')
+                    password project.property('NEXUS_PASSWORD')
+                }
+                url = project.property('NEXUS_URL')
+            }
+        }
+    }
+}
