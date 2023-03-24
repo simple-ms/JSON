@@ -30,15 +30,29 @@ publishing {
     }
 
     repositories {
-        maven {
-            if (project.hasProperty('NEXUS_USERNAME') && project.hasProperty('NEXUS_PASSWORD')) {
-                println(project.property('NEXUS_URL'))
+        if (project.hasProperty('NEXUS_USERNAME') && project.hasProperty('NEXUS_PASSWORD')) {
+            maven {
+                def REPO_URL = version.endsWith('SNAPSHOT') ? project.property('NEXUS_URL_SNAPSHOTS') : project.property('NEXUS_URL')
+                println("Deploy ${project.name}:${version} To ${REPO_URL}")
                 credentials {
                     username project.property('NEXUS_USERNAME')
                     password project.property('NEXUS_PASSWORD')
                 }
-                url = project.property('NEXUS_URL')
+                url = REPO_URL
             }
         }
+
+        if (!version.endsWith('SNAPSHOT') && project.hasProperty('GITHUB_USERNAME') && project.hasProperty('GITHUB_TOKEN')) {
+            maven {
+                def REPO_URL = "https://maven.pkg.github.com/simplems/simple-json"
+                println("Deploy ${project.name}:${version} To ${REPO_URL}")
+                credentials {
+                    username project.property('GITHUB_USERNAME')
+                    password project.property('GITHUB_TOKEN')
+                }
+                url = REPO_URL
+            }
+        }
+
     }
 }
